@@ -6,14 +6,15 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(comment = FALSE))
+
 ```
 
 # Assignment 3 - GROUP 11
 ## Johnson & Johnson Quarterly Earnings Dataset
 ## Group Members
-- Patrick Kariuki
-- Calvin Mwangi
+- Patrick Kariuki 
+- Calvin Mwangi 670035
 - Tanveer Omar 670752
  
  
