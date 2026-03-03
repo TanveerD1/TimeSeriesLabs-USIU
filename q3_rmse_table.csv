@@ -1,0 +1,5 @@
+"Model","RMSE"
+"Holt-Winters (Multiplicative)",0.4412
+"12-Month Moving Average",0.789
+"Holt's Linear Trend",0.9819
+"Simple Exponential Smoothing",1.1593

@@ -1,0 +1,5 @@
+"Method","Trend_Capture","Seasonality_Capture","RMSE","Parameters","Forecast_Capability"
+"12-Month MA","Yes (with lag)","No (removes it)",0.789,"None","Limited"
+"Simple ES","No","No",1.1593,"α only","Yes"
+"Holt's Linear","Yes (best)","No",0.9819,"α, β","Yes"
+"Holt-Winters","Yes","Yes (best)",0.4412,"α, β, γ","Yes"

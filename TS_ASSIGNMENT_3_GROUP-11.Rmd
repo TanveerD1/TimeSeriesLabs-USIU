@@ -356,36 +356,18 @@ print(p_ses_fit)
 ggsave("q2_ses_fitted.png", p_ses_fit, width = 10, height = 5, dpi = 300)
 ```
 
-### 2d) Interpret the value of α
+`
 
-```{r}
-cat("\n\n", strrep("-", 50))
-cat("\n2d) INTERPRETATION OF ALPHA (α)")
-cat("\n", strrep("-", 50))
+### 2d) INTERPRETATION OF ALPHA (α)
 
-if(alpha_value > 0.5) {
-  cat("\nAlpha =", round(alpha_value, 4), "indicates a HIGHLY RESPONSIVE model.")
-  cat("\n\nInterpretation:")
-  cat("\n• The model gives more weight (", round(alpha_value*100, 1), "%) to recent observations")
-  cat("\n• Less weight (", round((1-alpha_value)*100, 1), "%) to past observations")
-  cat("\n• The forecast responds quickly to changes in the series")
-  cat("\n• This suggests the series has changing patterns that require quick adaptation")
-} else if(alpha_value < 0.2) {
-  cat("\nAlpha =", round(alpha_value, 4), "indicates a STRONGLY SMOOTHED model.")
-  cat("\n\nInterpretation:")
-  cat("\n• The model gives more weight to past observations")
-  cat("\n• Recent observations have less influence on forecasts")
-  cat("\n• The series is relatively stable with minimal random fluctuations")
-  cat("\n• This suggests strong persistence in the series")
-} else {
-  cat("\nAlpha =", round(alpha_value, 4), "indicates a MODERATELY RESPONSIVE model.")
-  cat("\n\nInterpretation:")
-  cat("\n• The model balances recent and past observations")
-  cat("\n• ", round(alpha_value*100, 1), "% weight on current value")
-  cat("\n• ", round((1-alpha_value)*100, 1), "% weight on past values")
-  cat("\n• This suggests moderate stability with some responsiveness to changes")
-}
-```
+Alpha = 0.4233 indicates a MODERATELY RESPONSIVE model.
+
+Interpretation:
+• The model balances recent and past observations
+•  42.3 % weight on current value
+•  57.7 % weight on past values
+• This suggests moderate stability with some responsiveness to changes
+
 
 ### 2e) Fit Holt's Linear Trend Model
 ```{r}
@@ -414,35 +396,8 @@ cat("\nTrend smoothing parameter (β) =", round(beta_holt, 4))
 ### 2g) Interpret the strength of the trend
 
 ```{r}
-cat("\n\n", strrep("-", 50))
-cat("\n2g) INTERPRETATION OF TREND STRENGTH")
-cat("\n", strrep("-", 50))
 
-cat("\nBeta (β) =", round(beta_holt, 4), "indicates a WEAK/STABLE trend component.")
-
-cat("\n\nInterpretation:")
-cat("\n• The trend changes very slowly over time (only", round(beta_holt*100, 1), 
-    "% weight on new trend information)")
-cat("\n• The series has a consistent, predictable direction - once established, the")
-cat("\n  trend persists with minimal adjustment")
-cat("\n• Forecasts will maintain a relatively constant slope, avoiding overreaction")
-cat("\n  to short-term fluctuations")
-
-cat("\n\nComparison of parameters:")
-cat("\n• Alpha (α) =", round(alpha_holt, 4), "(level smoothing) - relatively LOW")
-cat("\n• Beta (β) =", round(beta_holt, 4), "(trend smoothing) - relatively LOW")
-cat("\n\nThis combination indicates a VERY STABLE series where both the level and")
-cat("\ntrend change gradually. The low β means the trend component is 'sticky' -")
-cat("\nonce the growth rate is established, it tends to persist.")
-
-# Extract trend component correctly
-# The states matrix contains level (l) and trend (b) for each period
-# The first value is the initial state, followed by 84 fitted values
 trend_values <- holt_model$model$states[, "b"]  # This is the slope/trend component
-
-# For plotting, we need to align with the dates
-# The fitted values correspond to the original time points
-# The initial state doesn't have a corresponding date
 trend_df <- data.frame(
   Date = jj_df$Date,  # 84 dates
   Trend_Slope = trend_values[-1]  # Remove the first element (initial state)
@@ -462,19 +417,36 @@ p_trend_slope <- ggplot(trend_df, aes(x = Date, y = Trend_Slope)) +
 print(p_trend_slope)
 ggsave("q2_trend_component.png", p_trend_slope, width = 10, height = 4, dpi = 300)
 
-# Calculate trend statistics
-cat("\n\nTrend Statistics:")
-cat("\n• Average trend slope: $", round(mean(trend_values[-1]), 4), "per quarter")
-cat("\n• Trend slope range: $", round(min(trend_values[-1]), 4), "to $", round(max(trend_values[-1]), 4))
-cat("\n• Trend volatility (SD): $", round(sd(trend_values[-1]), 4))
 
-# Show that trend increases over time (exponential growth)
-cat("\n\nTrend Pattern:")
-cat("\n• Early years (1960-1965): Trend slope around $0.02-0.03 per quarter")
-cat("\n• Middle years (1966-1972): Trend slope increases to $0.08-0.12 per quarter")
-cat("\n• Later years (1973-1980): Trend slope reaches $0.25-0.35 per quarter")
-cat("\n• This accelerating trend reflects the exponential growth pattern")
 ```
+
+Beta (β) = 0.0906 indicates a WEAK/STABLE trend component.
+
+#### Interpretation:
+• The trend changes very slowly over time (only 9.1 % weight on new trend information)
+• The series has a consistent, predictable direction - once established, the
+  trend persists with minimal adjustment
+• Forecasts will maintain a relatively constant slope, avoiding overreaction
+  to short-term fluctuations
+
+**Comparison of parameters:**
+• Alpha (α) = 0.0906 (level smoothing) - relatively LOW
+• Beta (β) = 0.0906 (trend smoothing) - relatively LOW
+
+This combination indicates a VERY STABLE series where both the level and
+trend change gradually. The low β means the trend component is 'sticky' -
+once the growth rate is established, it tends to persist.
+
+**Trend Statistics:**
+• Average trend slope: $ 0.1758 per quarter
+• Trend slope range: $ -0.0219 to $ 0.6935
+• Trend volatility (SD): $ 0.1725
+
+**Trend Pattern:**
+• Early years (1960-1965): Trend slope around $0.02-0.03 per quarter
+• Middle years (1966-1972): Trend slope increases to $0.08-0.12 per quarter
+• Later years (1973-1980): Trend slope reaches $0.25-0.35 per quarter
+• This accelerating trend reflects the exponential growth pattern
 
 ### 2h) Fit Holt-Winters model
 
