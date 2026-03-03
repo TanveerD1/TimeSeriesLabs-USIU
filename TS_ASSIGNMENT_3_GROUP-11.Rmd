@@ -686,6 +686,25 @@ cat("\n• 95% confidence interval width: ~$",
 ### 3a) Which method captures trend most effectively?
 
 ```{r}
+# First, ensure RMSE values are calculated
+calculate_rmse <- function(actual, fitted) {
+  valid <- !is.na(fitted) & !is.na(actual)
+  if(sum(valid) == 0) return(NA)
+  sqrt(mean((actual[valid] - fitted[valid])^2))
+}
+
+# Get fitted values
+fitted_ma12 <- jj_df$MA_12month
+fitted_ses <- as.numeric(fitted(ses_model))
+fitted_holt <- as.numeric(fitted(holt_model))
+fitted_hw <- as.numeric(fitted(hw_multi_model))
+
+# Calculate RMSE
+rmse_ma12 <- calculate_rmse(jj_df$Earnings, fitted_ma12)
+rmse_ses <- calculate_rmse(jj_df$Earnings, fitted_ses)
+rmse_holt <- calculate_rmse(jj_df$Earnings, fitted_holt)
+rmse_hw <- calculate_rmse(jj_df$Earnings, fitted_hw)
+
 cat("\n\n", strrep("=", 70))
 cat("\nQUESTION 3: MODEL COMPARISON")
 cat("\n", strrep("=", 70))
@@ -722,6 +741,9 @@ trend_hw <- hw_multi_model$model$states[, "l"]  # level component from HW
 # Remove NA values from MA12 and align all series
 valid_idx <- !is.na(trend_ma12)
 trend_ma12_clean <- trend_ma12[valid_idx]
+# For Holt and HW, we need to ensure they align with the same dates
+# They have 84 values, but MA12 has NAs at beginning and end
+# We need to match the indices where MA12 has valid values
 trend_holt_clean <- trend_holt[valid_idx]
 trend_hw_clean <- trend_hw[valid_idx]
 dates_clean <- jj_df$Date[valid_idx]
@@ -736,7 +758,7 @@ trend_comparison <- data.frame(
 )
 
 p_trend_compare <- ggplot(trend_comparison, aes(x = Date, y = Trend, color = Method)) +
-  geom_line(size = 1) +
+  geom_line(linewidth = 1) +
   labs(title = "Trend Component Comparison by Method",
        subtitle = "Holt's method captures the accelerating growth pattern",
        x = "Date", 
