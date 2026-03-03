@@ -168,6 +168,57 @@ ggsave("q1_moving_averages.png", p_main, width = 12, height = 6, dpi = 300)
 
 ### 1c) Interpret the results
 
+**i. What component is removed by the 3-month moving average?**
+
+For quarterly data like Johnson & Johnson, a 3-month moving average
+is equivalent to a 1-quarter moving average. Since it's just a single
+quarter, it does NO smoothing - it simply passes through the original data.
+
+Therefore, the 3-month moving average removes:
+• Nothing! It retains ALL components:
+  - Trend component
+  - Seasonal component (quarterly patterns)
+  - Irregular/random component
+
+Statistical Evidence: The variance is identical:
+• Original variance: $ 16.8801
+• 3-MA variance: $ 16.8801
+• Variance retained: 100%
+
+**ii. What component is removed by the 12-month moving average?**
+
+The 12-month moving average (4-quarters) removes:
+• ALL seasonal patterns (by averaging across all 4 quarters)
+• Short-term random fluctuations
+
+It preserves only the LONG-TERM TREND component.
+
+Statistical Evidence:
+• Original variance: $ 16.8801
+• 12-MA variance: $ 16.7014
+• Variance retained:  98.9 %
+• The much lower variance indicates removal of seasonal and irregular components.
+
+**iii. Which moving average provides a better estimate of the trend?**
+
+The 12-month (4-quarter) moving average provides a FAR BETTER estimate of the trend.
+
+Reasoning:
+1. The 3-month MA (1-quarter) still contains strong seasonal fluctuations
+2. Looking at the plot, we can see clear quarterly patterns in the 3-month MA
+3. The 12-month MA smooths out these quarterly peaks and valleys
+4. What remains is the pure long-term exponential growth trend
+5. Johnson & Johnson earnings show increasing amplitude in seasonality
+   which the 12-month MA successfully removes
+
+**Seasonal Pattern (average deviation by quarter):**
+#  4 × 3 Matrix
+  Quarter Avg_Earnings Deviation
+    <dbl>        <dbl>     <dbl>
+1       1         4.79  -0.00833
+2       2         4.97   0.166  
+3       3         5.25   0.454  
+4       4         4.19  -0.612  
 ```{r}
 # Create separate plots for better interpretation
 p1 <- ggplot(jj_df, aes(x = Date)) +
@@ -214,52 +265,6 @@ var_original <- var(sales_clean$Earnings, na.rm = TRUE)
 var_3MA <- var(sales_clean$MA_3month, na.rm = TRUE)
 var_12MA <- var(sales_clean$MA_12month, na.rm = TRUE)
 
-cat("\n", strrep("=", 70))
-cat("\nQUESTION 1c: INTERPRETATION OF MOVING AVERAGES")
-cat("\n", strrep("=", 70))
-
-# i. What component is removed by 3-month moving average?
-cat("\n\ni. What component is removed by the 3-month moving average?")
-cat("\n", strrep("-", 50))
-cat("\nFor quarterly data like Johnson & Johnson, a 3-month moving average")
-cat("\nis equivalent to a 1-quarter moving average. Since it's just a single")
-cat("\nquarter, it does NO smoothing - it simply passes through the original data.")
-cat("\n\nTherefore, the 3-month moving average removes:")
-cat("\n• Nothing! It retains ALL components:")
-cat("\n  - Trend component")
-cat("\n  - Seasonal component (quarterly patterns)")
-cat("\n  - Irregular/random component")
-cat("\n\nStatistical Evidence: The variance is identical:")
-cat("\n• Original variance: $", round(var_original, 4))
-cat("\n• 3-MA variance: $", round(var_3MA, 4))
-cat("\n• Variance retained: 100%")
-
-# ii. What component is removed by the 12-month moving average?
-cat("\n\nii. What component is removed by the 12-month moving average?")
-cat("\n", strrep("-", 50))
-cat("\nThe 12-month moving average (4-quarters) removes:")
-cat("\n• ALL seasonal patterns (by averaging across all 4 quarters)")
-cat("\n• Short-term random fluctuations")
-cat("\n\nIt preserves only the LONG-TERM TREND component.")
-cat("\n\nStatistical Evidence:")
-cat("\n• Original variance: $", round(var_original, 4))
-cat("\n• 12-MA variance: $", round(var_12MA, 4))
-cat("\n• Variance retained: ", round(var_12MA/var_original*100, 1), "%")
-cat("\n• The much lower variance indicates removal of seasonal and irregular components.")
-
-# iii. Which moving average provides a better estimate of the trend?
-cat("\n\niii. Which moving average provides a better estimate of the trend?")
-cat("\n", strrep("-", 50))
-
-cat("\nThe 12-month (4-quarter) moving average provides a FAR BETTER estimate of the trend.")
-
-cat("\n\nReasoning:")
-cat("\n1. The 3-month MA (1-quarter) still contains strong seasonal fluctuations")
-cat("\n2. Looking at the plot, we can see clear quarterly patterns in the 3-month MA")
-cat("\n3. The 12-month MA smooths out these quarterly peaks and valleys")
-cat("\n4. What remains is the pure long-term exponential growth trend")
-cat("\n5. Johnson & Johnson earnings show increasing amplitude in seasonality")
-cat("\n   which the 12-month MA successfully removes")
 
 # Show the seasonal pattern explicitly
 cat("\n\nSeasonal Pattern (average deviation by quarter):\n")
@@ -287,24 +292,20 @@ ggsave("q1_trend_revealed.png", p_trend, width = 10, height = 5, dpi = 300)
 ```
 
 ### Summary for Question 1
-```{r}
-cat("\n\n", strrep("#", 70))
-cat("\n# SUMMARY FOR QUESTION 1 - MOVING AVERAGE")
-cat("\n", strrep("#", 70))
 
-cat("\n\nKey Findings:")
-cat("\n1. The 3-month MA (1-quarter) removes no components - it's the original data")
-cat("\n2. The 12-month MA (4-quarter) removes seasonality and random fluctuations")
-cat("\n3. The 12-month MA provides the best trend estimate, showing:")
-cat("\n   - Clear exponential growth pattern")
-cat("\n   - Smooth, monotonic increase over time")
-cat("\n   - No quarterly fluctuations")
+Key Findings:
+1. The 3-month MA (1-quarter) removes no components - it's the original data
+2. The 12-month MA (4-quarter) removes seasonality and random fluctuations
+3. The 12-month MA provides the best trend estimate, showing:
+   - Clear exponential growth pattern
+   - Smooth, monotonic increase over time
+   - No quarterly fluctuations
 
-cat("\n\nComponents visible in each series:")
-cat("\n- Original Series: Trend + Seasonality + Irregular")
-cat("\n- 3-month MA: Trend + Seasonality + Irregular (identical to original)")
-cat("\n- 12-month MA: Trend only (pure long-term direction)")
-```
+Components visible in each series:
+- Original Series: Trend + Seasonality + Irregular
+- 3-month MA: Trend + Seasonality + Irregular (identical to original)
+- 12-month MA: Trend only (pure long-term direction)
+
 
 # Question 2: Exponential Smoothing
 
@@ -507,22 +508,45 @@ hw_add_model <- hw(jj_ts, seasonal = "additive", h = 4)
 
 ### 2i) Justify choice between additive and multiplicative seasonality
 
+Based on the Johnson & Johnson dataset analysis, I chose **MULTIPLICATIVE** seasonality.
+
+1. VISUAL INSPECTION:
+   • The seasonal amplitude INCREASES as the trend rises
+   • Early years (1960s): Quarterly range ≈ $0.20-$0.40
+   • Later years (1970s): Quarterly range ≈ $4.00-$6.00
+   • The size of seasonal swings grows WITH the trend level
+   • This is the classic signature of multiplicative seasonality
+
+2. STATISTICAL EVIDENCE:
+   • Correlation between trend level and seasonal amplitude: 0.937
+   • P-value: 0
+   • VERY STRONG positive correlation ( 93.7 %) - confirms multiplicative pattern
+
+3. MODEL COMPARISON (AIC):
+   • Multiplicative model AIC: 234.7
+   • Additive model AIC: 250.88
+   • Difference: 16.19
+   • Multiplicative model is substantially better (ΔAIC > 2)
+
+4. SEASONAL PATTERN EXAMINATION:
+   • Multiplicative seasonal factors:
+     - Q1 factor: 0.792 (earnings are -20.8 % of trend)
+     - Q2 factor: 1.069 (earnings are 6.9 % of trend)
+     - Q3 factor: 1.046 (earnings are 4.6 % ABOVE trend)
+     - Q4 factor: 1.093 (earnings are -9.3 % BELOW trend)
+
+   • These percentages remain relatively constant over time,
+     while the DOLLAR amount grows - this is multiplicative seasonality.
+
+5. CONCLUSION:
+   I chose MULTIPLICATIVE seasonality because:
+   • The seasonal fluctuations grow proportionally with the trend
+   • The correlation between trend and seasonal amplitude is very strong
+   • Multiplicative factors (percentages) are more stable than additive differences
+   • This matches how company earnings typically work - as the company grows,
+     the dollar impact of seasonal factors grows with it
+     
 ```{r}
-cat("\n\n", strrep("-", 50))
-cat("\n2i) JUSTIFICATION OF SEASONALITY TYPE")
-cat("\n", strrep("-", 50))
-
-cat("\nBased on the Johnson & Johnson dataset analysis, I chose **MULTIPLICATIVE** seasonality.")
-
-cat("\n\n1. VISUAL INSPECTION:")
-cat("\n   • The seasonal amplitude INCREASES as the trend rises")
-cat("\n   • Early years (1960s): Quarterly range ≈ $0.20-$0.40")
-cat("\n   • Later years (1970s): Quarterly range ≈ $4.00-$6.00")
-cat("\n   • The size of seasonal swings grows WITH the trend level")
-cat("\n   • This is the classic signature of multiplicative seasonality")
-
-cat("\n\n2. STATISTICAL EVIDENCE:")
-# Calculate seasonal ranges by year
 seasonal_ranges <- jj_df %>%
   group_by(Year) %>%
   summarise(
@@ -535,28 +559,6 @@ cor_test <- cor.test(seasonal_ranges$Mean_Earnings, seasonal_ranges$Seasonal_Ran
 cat("\n   • Correlation between trend level and seasonal amplitude:", 
     round(cor_test$estimate, 3))
 cat("\n   • P-value:", round(cor_test$p.value, 4))
-
-if(cor_test$estimate > 0.8 & cor_test$p.value < 0.001) {
-  cat("\n   • VERY STRONG positive correlation (", round(cor_test$estimate*100, 1), 
-      "%) - confirms multiplicative pattern")
-}
-
-cat("\n\n3. MODEL COMPARISON (AIC):")
-# Extract AIC from model objects, not forecast objects
-hw_multi_aic <- AIC(hw_multi_model$model)
-hw_add_aic <- AIC(hw_add_model$model)
-cat("\n   • Multiplicative model AIC:", round(hw_multi_aic, 2))
-cat("\n   • Additive model AIC:", round(hw_add_aic, 2))
-aic_diff <- hw_add_aic - hw_multi_aic
-cat("\n   • Difference:", round(aic_diff, 2))
-
-if(aic_diff > 2) {
-  cat("\n   • Multiplicative model is substantially better (ΔAIC > 2)")
-} else if(aic_diff > 0) {
-  cat("\n   • Multiplicative model is slightly better")
-} else {
-  cat("\n   • Additive model has lower AIC despite visual evidence")
-}
 
 cat("\n\n4. SEASONAL PATTERN EXAMINATION:")
 # Calculate seasonal factors as percentages
@@ -571,16 +573,9 @@ cat("\n     - Q3 factor:", seasonal_factors[3], "(earnings are",
 cat("\n     - Q4 factor:", seasonal_factors[4], "(earnings are", 
     round((1-seasonal_factors[4])*100, 1), "% BELOW trend)")
 
-cat("\n\n   • These percentages remain relatively constant over time,")
-cat("\n     while the DOLLAR amount grows - this is multiplicative seasonality.")
 
-cat("\n\n5. CONCLUSION:")
-cat("\n   I chose MULTIPLICATIVE seasonality because:")
-cat("\n   • The seasonal fluctuations grow proportionally with the trend")
-cat("\n   • The correlation between trend and seasonal amplitude is very strong")
-cat("\n   • Multiplicative factors (percentages) are more stable than additive differences")
-cat("\n   • This matches how company earnings typically work - as the company grows,")
-cat("\n     the dollar impact of seasonal factors grows with it")
+
+
 ```
 
 
@@ -685,6 +680,25 @@ cat("\n• 95% confidence interval width: ~$",
 
 ### 3a) Which method captures trend most effectively?
 
+**HOLT'S LINEAR TREND METHOD** captures the trend most effectively.
+
+Explanation:
+1. The 12-month Moving Average captures trend but with a significant LAG
+2. Simple Exponential Smoothing has NO trend component - forecasts are flat
+3. Holt's method has a dedicated trend smoothing parameter (β) that:
+   • Estimates the slope/growth rate separately from the level
+   • Updates the trend based on recent directional changes
+   • Projects this trend forward for forecasting
+4. Holt-Winters captures trend but the seasonal adjustment can sometimes
+   obscure the pure trend pattern
+
+Evidence from Johnson & Johnson data:
+• Holt's trend parameter β = 0.0906
+• The trend component evolves from ~$0.02/quarter in 1960 to ~$0.30/quarter in 1980
+• This captures the accelerating (exponential) growth pattern
+• RMSE for Holt's: 0.9819 (better than MA and SES)
+• The fitted trend line follows the exponential growth without seasonal noise
+
 ```{r}
 # First, ensure RMSE values are calculated
 calculate_rmse <- function(actual, fitted) {
@@ -705,34 +719,6 @@ rmse_ses <- calculate_rmse(jj_df$Earnings, fitted_ses)
 rmse_holt <- calculate_rmse(jj_df$Earnings, fitted_holt)
 rmse_hw <- calculate_rmse(jj_df$Earnings, fitted_hw)
 
-cat("\n\n", strrep("=", 70))
-cat("\nQUESTION 3: MODEL COMPARISON")
-cat("\n", strrep("=", 70))
-
-cat("\n\n3a) METHOD THAT CAPTURES TREND MOST EFFECTIVELY:")
-cat("\n", strrep("-", 50))
-
-cat("\n**HOLT'S LINEAR TREND METHOD** captures the trend most effectively.")
-
-cat("\n\nExplanation:")
-cat("\n1. The 12-month Moving Average captures trend but with a significant LAG")
-cat("\n2. Simple Exponential Smoothing has NO trend component - forecasts are flat")
-cat("\n3. Holt's method has a dedicated trend smoothing parameter (β) that:")
-cat("\n   • Estimates the slope/growth rate separately from the level")
-cat("\n   • Updates the trend based on recent directional changes")
-cat("\n   • Projects this trend forward for forecasting")
-cat("\n4. Holt-Winters captures trend but the seasonal adjustment can sometimes")
-cat("\n   obscure the pure trend pattern")
-
-cat("\n\nEvidence from Johnson & Johnson data:")
-cat("\n• Holt's trend parameter β =", round(beta_holt, 4))
-cat("\n• The trend component evolves from ~$0.02/quarter in 1960 to ~$0.30/quarter in 1980")
-cat("\n• This captures the accelerating (exponential) growth pattern")
-cat("\n• RMSE for Holt's:", round(rmse_holt, 4), "(better than MA and SES)")
-cat("\n• The fitted trend line follows the exponential growth without seasonal noise")
-
-# Visualize trend capture comparison
-# Extract trend from each method
 trend_ma12 <- jj_df$MA_12month
 # For Holt and HW, the level component is the trend
 trend_holt <- holt_model$model$states[, "l"]  # level component
@@ -741,9 +727,7 @@ trend_hw <- hw_multi_model$model$states[, "l"]  # level component from HW
 # Remove NA values from MA12 and align all series
 valid_idx <- !is.na(trend_ma12)
 trend_ma12_clean <- trend_ma12[valid_idx]
-# For Holt and HW, we need to ensure they align with the same dates
-# They have 84 values, but MA12 has NAs at beginning and end
-# We need to match the indices where MA12 has valid values
+
 trend_holt_clean <- trend_holt[valid_idx]
 trend_hw_clean <- trend_hw[valid_idx]
 dates_clean <- jj_df$Date[valid_idx]
@@ -773,51 +757,38 @@ ggsave("q3_trend_comparison.png", p_trend_compare, width = 10, height = 5, dpi =
 
 ### 3b) Which method captures seasonality?
 
+**HOLT-WINTERS METHOD** captures seasonality most effectively.
+
+Explanation:
+1. 12-month Moving Average DELIBERATELY REMOVES seasonality - it's designed to smooth it out
+2. Simple Exponential Smoothing has no seasonal component - treats all variations as noise
+3. Holt's Linear Trend has no seasonal component - attributes all patterns to trend + error
+4. Holt-Winters explicitly models seasonal patterns with:
+   • Dedicated seasonal smoothing parameter (γ)
+   • Seasonal factors (additive or multiplicative) for each period
+   • Ability to update seasonal patterns over time
+
+Evidence for Johnson & Johnson:
+• Quarterly patterns are strong and remarkably consistent:
+  - Q1: Moderate earnings (baseline)
+  - Q2: Slightly higher than Q1
+  - Q3: Highest of the year (peak)
+  - Q4: Lowest of the year (trough)
+
+• Holt-Winters estimated seasonal components (multiplicative factors):
+  - Q1 factor: 0.792
+  - Q2 factor: 1.069
+  - Q3 factor: 1.046
+  - Q4 factor: 1.093
+
+• These factors have clear business interpretation:
+  - Q3 earnings are about 4.6 % ABOVE the annual trend line
+  - Q4 earnings are about -9.3 % BELOW the annual trend line
+  - This pattern persists throughout the 20-year period
+
+• Seasonal smoothing parameter γ = 1e-04
+  - Low γ indicates the seasonal pattern is very stable over time
 ```{r}
-cat("\n\n3b) METHOD THAT CAPTURES SEASONALITY MOST EFFECTIVELY:")
-cat("\n", strrep("-", 50))
-
-cat("\n**HOLT-WINTERS METHOD** captures seasonality most effectively.")
-
-cat("\n\nExplanation:")
-cat("\n1. 12-month Moving Average DELIBERATELY REMOVES seasonality - it's designed to smooth it out")
-cat("\n2. Simple Exponential Smoothing has no seasonal component - treats all variations as noise")
-cat("\n3. Holt's Linear Trend has no seasonal component - attributes all patterns to trend + error")
-cat("\n4. Holt-Winters explicitly models seasonal patterns with:")
-cat("\n   • Dedicated seasonal smoothing parameter (γ)")
-cat("\n   • Seasonal factors (additive or multiplicative) for each period")
-cat("\n   • Ability to update seasonal patterns over time")
-
-cat("\n\nEvidence for Johnson & Johnson:")
-cat("\n• Quarterly patterns are strong and remarkably consistent:")
-cat("\n  - Q1: Moderate earnings (baseline)")
-cat("\n  - Q2: Slightly higher than Q1")
-cat("\n  - Q3: Highest of the year (peak)")
-cat("\n  - Q4: Lowest of the year (trough)")
-
-cat("\n\n• Holt-Winters estimated seasonal components (multiplicative factors):")
-seasonal_factors <- round(hw_multi_model$model$states[1, c("s1", "s2", "s3", "s4")], 3)
-cat("\n  - Q1 factor:", seasonal_factors[1])
-cat("\n  - Q2 factor:", seasonal_factors[2]) 
-cat("\n  - Q3 factor:", seasonal_factors[3])
-cat("\n  - Q4 factor:", seasonal_factors[4])
-
-cat("\n\n• These factors have clear business interpretation:")
-cat("\n  - Q3 earnings are about", round((seasonal_factors[3]-1)*100, 1), 
-    "% ABOVE the annual trend line")
-cat("\n  - Q4 earnings are about", round((1-seasonal_factors[4])*100, 1), 
-    "% BELOW the annual trend line")
-cat("\n  - This pattern persists throughout the 20-year period")
-
-cat("\n\n• Seasonal smoothing parameter γ =", round(gamma_hw, 4))
-if(gamma_hw < 0.1) {
-  cat("\n  - Low γ indicates the seasonal pattern is very stable over time")
-} else if(gamma_hw < 0.3) {
-  cat("\n  - Moderate γ indicates some evolution in seasonal pattern")
-} else {
-  cat("\n  - High γ indicates seasonal pattern changes rapidly")
-}
-
 # Visualize seasonal pattern
 ggseasonplot(jj_ts, year.labels = TRUE, year.labels.left = TRUE) +
   labs(title = "Seasonal Pattern: Johnson & Johnson Earnings by Quarter",
@@ -827,6 +798,8 @@ ggseasonplot(jj_ts, year.labels = TRUE, year.labels.left = TRUE) +
 
 ggsave("q3_seasonal_pattern.png", width = 8, height = 6, dpi = 300)
 ```
+
+
 
 ### 3c) Compute and compare forecast accuracy using RMSE
 
@@ -893,63 +866,27 @@ write.csv(rmse_table, "q3_rmse_table.csv", row.names = FALSE)
 
 ### 3d) Which model provides the most realistic forecasts?
 
+The **HOLT-WINTERS MULTIPLICATIVE** model provides the most realistic forecasts.
+
+Justification:
+
+1. CAPTURES ALL THREE COMPONENTS:
+   • TREND: The long-term exponential growth in earnings (evident in data)
+   • SEASONALITY: The consistent quarterly pattern (Q3 peak, Q4 trough)
+   • TREND-SEASONALITY INTERACTION: Seasonality grows with trend (multiplicative)
+
+2. REALISTIC PATTERNS:
+   • Forecasts show continuing upward trend (earnings expected to grow)
+   • Quarterly variations persist with the same relative pattern
+   • The seasonal amplitude continues to grow with the trend
+   • This EXACTLY matches the historical pattern of the data
+
+3. MODEL FIT STATISTICS:
+   • LOWEST RMSE: 0.4412091 (best fit to historical data)
+   • This means it captures the actual patterns most accurately
+
 ```{r}
-cat("\n\n3d) MODEL PROVIDING THE MOST REALISTIC FORECASTS:")
-cat("\n", strrep("-", 50))
 
-cat("\nBased on the Johnson & Johnson dataset analysis:")
-
-cat("\n\nThe **HOLT-WINTERS MULTIPLICATIVE** model provides the most realistic forecasts.")
-
-cat("\n\nJustification:")
-
-cat("\n\n1. CAPTURES ALL THREE COMPONENTS:")
-cat("\n   • TREND: The long-term exponential growth in earnings (evident in data)")
-cat("\n   • SEASONALITY: The consistent quarterly pattern (Q3 peak, Q4 trough)")
-cat("\n   • TREND-SEASONALITY INTERACTION: Seasonality grows with trend (multiplicative)")
-
-cat("\n\n2. REALISTIC PATTERNS:")
-cat("\n   • Forecasts show continuing upward trend (earnings expected to grow)")
-cat("\n   • Quarterly variations persist with the same relative pattern")
-cat("\n   • The seasonal amplitude continues to grow with the trend")
-cat("\n   • This EXACTLY matches the historical pattern of the data")
-
-cat("\n\n3. MODEL FIT STATISTICS:")
-cat("\n   • LOWEST RMSE:", rmse_hw, "(best fit to historical data)")
-cat("\n   • This means it captures the actual patterns most accurately")
-
-cat("\n\n4. COMPARISON WITH OTHER MODELS:")
-
-cat("\n\n   • 12-Month Moving Average:")
-cat("\n     - Cannot generate true forecasts (just repeats last trend)")
-cat("\n     - Always lags behind actual trends")
-cat("\n     - Loses information at the ends of the series")
-
-cat("\n\n   • Simple Exponential Smoothing:")
-cat("\n     - Produces CONSTANT forecasts (flat line)")
-cat("\n     - Completely unrealistic for a growing company")
-cat("\n     - Ignores both trend and seasonality")
-
-cat("\n\n   • Holt's Linear Trend:")
-cat("\n     - Captures trend but IGNORES seasonality")
-cat("\n     - Forecasts miss the quarterly pattern entirely")
-cat("\n     - Would predict similar values for all quarters of 1981")
-
-cat("\n\n   • Holt-Winters (Multiplicative):")
-cat("\n     - Captures trend AND seasonality")
-cat("\n     - Seasonal pattern matches historical data")
-cat("\n     - Trend-seasonality interaction is correctly modeled")
-cat("\n     - Most complete and realistic picture")
-
-cat("\n\n5. FORECAST VALUES FOR 1981 (most realistic):")
-cat("\n   • Q1 1981: ~$16.47 (moderate - typical Q1 level)")
-cat("\n   • Q2 1981: ~$15.15 (slight dip - matches historical Q2 pattern)")
-cat("\n   • Q3 1981: ~$18.26 (PEAK - Q3 is always highest)")
-cat("\n   • Q4 1981: ~$12.78 (TROUGH - Q4 is always lowest)")
-cat("\n   This pattern follows the historical quarterly pattern EXACTLY.")
-
-# Create comparison plot of all forecasts
-# Generate forecasts from each model
 ses_forecast <- forecast(ses_model, h = 4)
 holt_forecast <- forecast(holt_model, h = 4)
 hw_forecast <- forecast(hw_multi_model, h = 4)
@@ -992,63 +929,63 @@ print(p_forecast_compare)
 ggsave("q3_forecast_comparison.png", p_forecast_compare, width = 10, height = 6, dpi = 300)
 ```
 
+
+
+   
 ### 3e) Why exponential smoothing outperforms moving averages for forecasting
 
+Exponential smoothing methods generally outperform moving averages for forecasting because:
+
+1. WEIGHTING SCHEME:
+   • Moving averages give EQUAL weight to ALL observations in the window
+   • Exponential smoothing gives DECAYING weights - more recent = more important
+   • This is more realistic - recent data is typically more relevant for forecasting
+   • Example: For Johnson & Johnson, earnings from 1980 tell us more about
+     1981 than earnings from 1960
+
+2. DATA UTILIZATION:
+   • Moving averages ignore ALL data outside the window completely
+   • Exponential smoothing uses ALL past data (with decreasing weights)
+   • Example: A 12-month MA for Q1 1980 uses only 1980 data, ignoring
+     the entire growth pattern from 1960-1979
+
+3. PARAMETER OPTIMIZATION:
+   • Moving averages have NO parameters to optimize for best fit
+   • Exponential smoothing optimizes α, β, γ for the specific dataset
+   • For Johnson & Johnson, this means:
+     - α = 0.4233 (optimal responsiveness to level changes)
+     - β = 0.0906 (optimal trend evolution rate)
+     - γ = 1e-04 (optimal seasonal update rate)
+
+4. FLEXIBILITY - ADAPTIVE COMPONENTS:
+   • Moving averages have ONE fixed structure (simple averaging)
+   • Exponential smoothing can adapt to different patterns:
+     - Simple ES: Adapts to level changes only
+     - Holt's: Adapts to level AND trend changes
+     - Holt-Winters: Adapts to level AND trend AND seasonality changes
+   • This allows the model to match the complexity of the data
+
+5. FORECASTING CAPABILITY:
+   • Moving averages CANNOT generate true forecasts beyond the data
+   • The best they can do is repeat the last moving average value
+   • Exponential smoothing can generate multi-step forecasts with:
+     - Trend continuation (Holt's, HW)
+     - Seasonal patterns (HW)
+     - Confidence intervals (all methods)
+
+6. NO END-POINT PROBLEM:
+   • Moving averages lose observations at the beginning and end of the series
+   • For Johnson & Johnson, we lose the first and last few quarters
+   • Exponential smoothing provides fitted values for ALL time points
+
+7. RESPONSIVENESS WITHOUT LAG:
+   • Moving averages always LAG behind trends (by design)
+   • Exponential smoothing can adjust more quickly to changes
+   • This is evident in the Johnson & Johnson data - the 12-MA consistently
+     lags behind the actual earnings during the rapid growth period
+
+
 ```{r}
-cat("\n\n3e) WHY EXPONENTIAL SMOOTHING OUTPERFORMS MOVING AVERAGES")
-cat("\n", strrep("-", 50))
-
-cat("\nExponential smoothing methods generally outperform moving averages for forecasting because:")
-
-cat("\n\n1. WEIGHTING SCHEME:")
-cat("\n   • Moving averages give EQUAL weight to ALL observations in the window")
-cat("\n   • Exponential smoothing gives DECAYING weights - more recent = more important")
-cat("\n   • This is more realistic - recent data is typically more relevant for forecasting")
-cat("\n   • Example: For Johnson & Johnson, earnings from 1980 tell us more about")
-cat("\n     1981 than earnings from 1960")
-
-cat("\n\n2. DATA UTILIZATION:")
-cat("\n   • Moving averages ignore ALL data outside the window completely")
-cat("\n   • Exponential smoothing uses ALL past data (with decreasing weights)")
-cat("\n   • Example: A 12-month MA for Q1 1980 uses only 1980 data, ignoring")
-cat("\n     the entire growth pattern from 1960-1979")
-
-cat("\n\n3. PARAMETER OPTIMIZATION:")
-cat("\n   • Moving averages have NO parameters to optimize for best fit")
-cat("\n   • Exponential smoothing optimizes α, β, γ for the specific dataset")
-cat("\n   • For Johnson & Johnson, this means:")
-cat("\n     - α =", round(alpha_value, 4), "(optimal responsiveness to level changes)")
-cat("\n     - β =", round(beta_holt, 4), "(optimal trend evolution rate)")
-cat("\n     - γ =", round(gamma_hw, 4), "(optimal seasonal update rate)")
-
-cat("\n\n4. FLEXIBILITY - ADAPTIVE COMPONENTS:")
-cat("\n   • Moving averages have ONE fixed structure (simple averaging)")
-cat("\n   • Exponential smoothing can adapt to different patterns:")
-cat("\n     - Simple ES: Adapts to level changes only")
-cat("\n     - Holt's: Adapts to level AND trend changes")
-cat("\n     - Holt-Winters: Adapts to level AND trend AND seasonality changes")
-cat("\n   • This allows the model to match the complexity of the data")
-
-cat("\n\n5. FORECASTING CAPABILITY:")
-cat("\n   • Moving averages CANNOT generate true forecasts beyond the data")
-cat("\n   • The best they can do is repeat the last moving average value")
-cat("\n   • Exponential smoothing can generate multi-step forecasts with:")
-cat("\n     - Trend continuation (Holt's, HW)")
-cat("\n     - Seasonal patterns (HW)")
-cat("\n     - Confidence intervals (all methods)")
-
-cat("\n\n6. NO END-POINT PROBLEM:")
-cat("\n   • Moving averages lose observations at the beginning and end of the series")
-cat("\n   • For Johnson & Johnson, we lose the first and last few quarters")
-cat("\n   • Exponential smoothing provides fitted values for ALL time points")
-
-cat("\n\n7. RESPONSIVENESS WITHOUT LAG:")
-cat("\n   • Moving averages always LAG behind trends (by design)")
-cat("\n   • Exponential smoothing can adjust more quickly to changes")
-cat("\n   • This is evident in the Johnson & Johnson data - the 12-MA consistently")
-cat("\n     lags behind the actual earnings during the rapid growth period")
-
-# Create visualization to show the difference in weighting
 weights_df <- data.frame(
   Lag = 1:20,
   MA_Weights = c(rep(1/12, 12), rep(NA, 8)),
@@ -1074,53 +1011,3 @@ print(p_weights)
 ggsave("q3_weight_comparison.png", p_weights, width = 8, height = 5, dpi = 300)
 ```
 
-# Final summary table
-
-```{r}
-# Create comprehensive comparison table
-comparison_summary <- data.frame(
-  Method = c("12-Month MA", "Simple ES", "Holt's Linear", "Holt-Winters"),
-  Trend_Capture = c("Yes (with lag)", "No", "Yes (best)", "Yes"),
-  Seasonality_Capture = c("No (removes it)", "No", "No", "Yes (best)"),
-  RMSE = round(c(rmse_ma12, rmse_ses, rmse_holt, rmse_hw), 4),
-  Parameters = c("None", "α only", "α, β", "α, β, γ"),
-  Forecast_Capability = c("Limited", "Yes", "Yes", "Yes")
-)
-
-cat("\n\n", strrep("=", 70))
-cat("\nFINAL MODEL COMPARISON SUMMARY")
-cat("\n", strrep("=", 70))
-print(comparison_summary)
-
-# Save summary table
-write.csv(comparison_summary, "q3_comparison_summary.csv", row.names = FALSE)
-
-# Create a nice formatted table for HTML output
-kable(comparison_summary, 
-      caption = "Summary Comparison of All Forecasting Methods",
-      col.names = c("Method", "Trend Capture", "Seasonality Capture", "RMSE", "Parameters", "Forecast Capability"))
-
-cat("\n\n", strrep("=", 70))
-cat("\nASSIGNMENT III COMPLETED - ALL QUESTIONS ANSWERED")
-cat("\n", strrep("=", 70))
-cat("\n\nFiles saved:")
-cat("\n• jj_original_series.png")
-cat("\n• jj_seasonal_plot.png")
-cat("\n• q1_moving_averages.png")
-cat("\n• q1_interpretation_plots.png")
-cat("\n• q1_trend_revealed.png")
-cat("\n• q2_ses_fitted.png")
-cat("\n• q2_trend_component.png")
-cat("\n• q2_seasonal_subseries.png")
-cat("\n• q2_seasonal_growth.png")
-cat("\n• q2_forecast_main.png")
-cat("\n• q2_forecast_detailed.png")
-cat("\n• q2_forecast_table.csv")
-cat("\n• q3_trend_comparison.png")
-cat("\n• q3_seasonal_pattern.png")
-cat("\n• q3_rmse_comparison.png")
-cat("\n• q3_rmse_table.csv")
-cat("\n• q3_forecast_comparison.png")
-cat("\n• q3_weight_comparison.png")
-cat("\n• q3_comparison_summary.csv")
-```
